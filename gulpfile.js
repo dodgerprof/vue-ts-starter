@@ -9,11 +9,12 @@ const MODES = {
 };
 const TARGET_DIR = "dist";
 
-const replace = require("gulp-replace");
+// const replace = require("gulp-replace");
+// Что заменять с помощью gulp-replace не догадался
 const args = require("yargs").argv;
 const gulp = require("gulp");
 const minifyCSS = require("gulp-csso");
-const sass = require("gulp-sass");
+const sass = require('gulp-sass')(require('sass'));
 const webpack = require("webpack-stream");
 const compiler = require("webpack");
 const gutil = require("gulp-util");
@@ -30,10 +31,13 @@ env({
 });
 gutil.log("[gulp]", `build mode: ${buildMode}`);
 const webpackConfig = require("./webpack.config.js");
+const ts = require("gulp-typescript");
+const tsProject = ts.createProject("tsconfig.json");
 // webpackConfig.watch = webpackConfig.mode === "development";
 
 gulp.task("scripts", () => {
     return gulp.src("./src/index.ts")
+        .pipe(tsProject()).js
         .pipe(webpack(webpackConfig), compiler, (err, stats) => {
             if (error) { // кажется еще не сталкивался с этой ошибкой
                 onError(error);
